@@ -1,0 +1,47 @@
+datasource db {
+    provider = "postgresql"
+    url      = "postgresql://postgres:rapido@127.0.0.1:5432/postgres"
+}
+
+generator db {
+    provider = "go run github.com/steebchen/prisma-client-go"
+}
+
+model User {
+  id       String @id @unique @default(cuid())
+  Name     String
+  Email    String @unique
+  password String
+  Ride     Ride[]
+}
+
+model Captain {
+  id      String  @id @unique @default(cuid())
+  Name    String
+  PhNo    BigInt
+  Vehicle Vehicle
+  RegNum  String  @unique
+  Ride    Ride[]
+}
+
+model Ride {
+  id              String   @id @unique @default(cuid())
+  Source          String
+  Destination     String
+  Rider           User     @relation(fields: [userId], references: [id])
+  AssignedCaptain Captain  @relation(fields: [captainId], references: [id])
+  Timestamp       DateTime
+  userId          String
+  captainId       String
+}
+
+enum Role {
+  Seller
+  Buyer
+}
+
+enum Vehicle {
+  TwoWheeler
+  ThreeWheeler
+  FourWheeler
+}
